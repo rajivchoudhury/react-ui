@@ -1,25 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import VPNSelectionScreen from './components/VPNSelectionScreen';
+import LoginScreen from './components/LoginScreen';
+import VPNMainScreen from './components/VPNMainScreen';
 
-function App() {
+export default function App() {
+  const [step, setStep] = useState('select');
+  const [provider, setProvider] = useState('');
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      {step === 'select' && (
+        <VPNSelectionScreen
+          onSelect={(p) => {
+            setProvider(p);
+            setStep('login');
+          }}
+        />
+      )}
+      {step === 'login' && (
+        <LoginScreen
+          provider={provider}
+          onLogin={() => setStep('vpn')}
+          onBack={() => setStep('select')}
+        />
+      )}
+      {step === 'vpn' && <VPNMainScreen />}
+    </>
   );
 }
-
-export default App;
