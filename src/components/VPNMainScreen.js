@@ -1,12 +1,21 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 const countryList = [
-  { name: 'USA', code: 'us' , flag: '/flags/us.png'},
-  { name: 'UK', code: 'gb' , flag: '/flags/uk.png'},
-  { name: 'Germany', code: 'de' , flag: '/flags/de.png'},
-  { name: 'India', code: 'in' , flag: '/flags/in.png'},
-  { name: 'Japan', code: 'jp' , flag: '/flags/jp.png'},
-  { name: 'Canada', code: 'ca' , flag: '/flags/ca.png'},
+  { name: 'USA', code: 'us', flag: '/flags/us.png' },
+  { name: 'UK', code: 'gb', flag: '/flags/uk.png' },
+  { name: 'Germany', code: 'de', flag: '/flags/de.png' },
+  { name: 'India', code: 'in', flag: '/flags/in.png' },
+  { name: 'Japan', code: 'jp', flag: '/flags/jp.png' },
+  { name: 'Canada', code: 'ca', flag: '/flags/ca.png' },
+  { name: 'Australia', code: 'au', flag: '/flags/au.png' },
+  { name: 'Korea', code: 'kr', flag: '/flags/korea.png' },
+  { name: 'France', code: 'fr', flag: '/flags/fr.png' },
+  { name: 'Brazil', code: 'br', flag: '/flags/br.png' },
+  { name: 'Russia', code: 'ru', flag: '/flags/ru.png' },
+  { name: 'China', code: 'cn', flag: '/flags/cn.png' },
+  { name: 'Italy', code: 'it', flag: '/flags/it.png' },
+  { name: 'Spain', code: 'es', flag: '/flags/es.png' },
+  { name: 'Netherlands', code: 'nl', flag: '/flags/nl.png' },
 ];
 
 export default function VPNMainScreen() {
@@ -26,6 +35,8 @@ export default function VPNMainScreen() {
     RemoteCertTLS: '',
     NSCertType: '',
   });
+  const flagRefs = useRef([]);
+  flagRefs.current = [];
 
   useEffect(() => {
     fetch('https://api.ipify.org?format=json')
@@ -65,6 +76,17 @@ export default function VPNMainScreen() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [focused]);
+
+  useEffect(() => {
+    if (focused === 'countries' && flagRefs.current[selectedCountry]) {
+      flagRefs.current[selectedCountry].scrollIntoView({
+        behavior: 'smooth',
+        inline: 'center',
+        block: 'nearest',
+      });
+    }
+  }, [selectedCountry, focused]);
+
 
   const selected = countryList[selectedCountry];
 
@@ -114,10 +136,11 @@ export default function VPNMainScreen() {
           </div>
         )}
 
-        <div style={styles.bottomBar}>
+        <div style={styles.flagScrollbar}>
           {countryList.map((c, i) => (
             <div
               key={c.code}
+              ref={(el) => (flagRefs.current[i] = el)}
               onClick={() => {
                 setSelectedCountry(i);
                 setFocused('countries');
@@ -135,6 +158,10 @@ export default function VPNMainScreen() {
                 src={c.flag}
                 alt={`${c.name} flag`}
                 style={styles.flagImage}
+                onError={(e) => {
+                  e.target.onerror = null; // Prevents infinite loop if image fails
+                  e.target.src = '/flags/default.png'; // Fallback image
+                }}
               />
             </div>
           ))}
@@ -196,8 +223,10 @@ const styles = {
     overflowX: 'auto',
     gap: '2vw',
     paddingBottom: '3vh',
-    justifyContent: 'center',
+    justifyContent: 'flex-start', // Start rather than center for scroll
     alignItems: 'center',
+    scrollbarWidth: 'none', // Firefox
+    msOverflowStyle: 'none', // IE
   },
   flagCard: {
     width: '10vh',
@@ -209,6 +238,8 @@ const styles = {
     alignItems: 'center',
     cursor: 'pointer',
     overflow: 'hidden',
+    flexShrink: 0, // Prevent from shrinking
+    minWidth: '10vh', // Ensures uniform sizing across scroll
   },
   flagImage: {
     width: '100%',
@@ -239,5 +270,18 @@ const styles = {
     border: 'none',
     background: '#333',
     color: 'white',
+  },
+  flagScrollbar: {
+    display: 'flex',
+    overflowX: 'auto',
+    gap: '2vw',
+    paddingBottom: '3vh',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    scrollbarWidth: 'none', /* Firefox */
+    msOverflowStyle: 'none', /* IE 10+ */
+  },
+  '::-webkit-scrollbar': {
+    display: 'none',
   },
 };
