@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 
 const countryList = [
-  { name: 'USA', code: 'us' },
-  { name: 'UK', code: 'gb' },
-  { name: 'Germany', code: 'de' },
-  { name: 'India', code: 'in' },
-  { name: 'Japan', code: 'jp' },
-  { name: 'Canada', code: 'ca' },
+  { name: 'USA', code: 'us' , flag: '/flags/us.png'},
+  { name: 'UK', code: 'gb' , flag: '/flags/uk.png'},
+  { name: 'Germany', code: 'de' , flag: '/flags/de.png'},
+  { name: 'India', code: 'in' , flag: '/flags/in.png'},
+  { name: 'Japan', code: 'jp' , flag: '/flags/jp.png'},
+  { name: 'Canada', code: 'ca' , flag: '/flags/ca.png'},
 ];
 
 export default function VPNMainScreen() {
@@ -132,7 +132,7 @@ export default function VPNMainScreen() {
               }}
             >
               <img
-                src={`https://flagcdn.com/w80/${c.code}.png`}
+                src={c.flag}
                 alt={`${c.name} flag`}
                 style={styles.flagImage}
               />
