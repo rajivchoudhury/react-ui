@@ -47,16 +47,6 @@ export default function VPNMainScreen() {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'ArrowDown') {
-        if (focused === 'button') setFocused('countries');
-        else setShowConfig(true);
-      }
-      if (e.key === 'ArrowUp') {
-        if (focused === 'countries') {
-          setShowConfig(false);
-          setFocused('button');
-        }
-      }
       if (e.key === 'ArrowLeft') {
         if (focused === 'countries') {
           setSelectedCountry((i) => (i - 1 + countryList.length) % countryList.length);
@@ -67,9 +57,27 @@ export default function VPNMainScreen() {
           setSelectedCountry((i) => (i + 1) % countryList.length);
         }
       }
+      if (e.key === 'ArrowUp') {
+        if (focused === 'countries') {
+          setShowConfig(false);
+          setFocused('button');
+        } else if (focused === 'button') {
+          setFocused('profile');
+        }
+      }
+      if (e.key === 'ArrowDown') {
+        if (focused === 'profile') {
+          setFocused('button');
+        } else if (focused === 'button') {
+          setFocused('countries');
+        } else if (focused === 'countries') {
+          setShowConfig(true);
+        }
+      }
       if (e.key === 'Enter') {
         if (focused === 'button') setIsConnected((prev) => !prev);
         if (focused === 'countries') setShowConfig(true);
+        if (focused === 'profile') alert('Logging out...');
       }
     };
 
@@ -94,6 +102,17 @@ export default function VPNMainScreen() {
     <div style={styles.container}>
       <img src="/world-map.jpg" alt="World Map" style={styles.bg} />
       <div style={styles.overlay}>
+        <div style={styles.profileContainer}>
+          <div
+            onClick={() => alert('Logging out...')}
+            style={{
+              ...styles.profileButton,
+              border: focused === 'profile' ? '2px solid yellow' : '2px solid transparent',
+            }}
+          >
+            <img src="/user-icon.png" alt="User" style={styles.profileImage} />
+          </div>
+        </div>
         <div style={styles.header}>
           <h1 style={styles.countryName}>
             {selected.name}{' '}
@@ -150,7 +169,7 @@ export default function VPNMainScreen() {
                 ...styles.flagCard,
                 border:
                   focused === 'countries' && selectedCountry === i
-                    ? '2px solid white'
+                    ? '5px solid white'
                     : 'none',
               }}
             >
@@ -283,5 +302,30 @@ const styles = {
   },
   '::-webkit-scrollbar': {
     display: 'none',
+  },
+  profileContainer: {
+    position: 'absolute',
+    top: '2vh',
+    left: '2vw',
+    zIndex: 3,
+  },
+
+  profileButton: {
+    width: '6vh',
+    height: '6vh',
+    borderRadius: '50%',
+    overflow: 'hidden',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#333',
+    cursor: 'pointer',
+  },
+
+  profileImage: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+    borderRadius: '50%',
   },
 };
